@@ -21,62 +21,62 @@
   <button id="submit-score">スコアを送信</button>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
 
-    let score = 0; // スコア変数（後で加算処理を入れる）
+  let score = 0;
+  let questionData = []; // 質問データを保存
 
-    function getQuestions() {
-      fetch(`${GAS_URL}?action=getQuestions`)
-        .then(response => response.json())
-        .then(data => {
-          const questionContainer = document.getElementById('question-container');
-          let html = '';
-          data.forEach((q, index) => {
-            html += `
-              <div>
-                <p>${q.question}</p>
-                <button onclick="answerQuestion(${index}, 0)">A: ${q.choices[0]}</button>
-                <button onclick="answerQuestion(${index}, 1)">B: ${q.choices[1]}</button>
-                <button onclick="answerQuestion(${index}, 2)">C: ${q.choices[2]}</button>
-              </div>
-            `;
-          });
-          questionContainer.innerHTML = html;
-        });
-    }
-
-    function answerQuestion(questionIndex, choiceIndex) {
-      // 正解チェック（仮に0が正解として例）
-      if (choiceIndex === 0) {
-        score += 10;
-        alert('正解！ +10点');
-      } else {
-        alert('不正解...');
-      }
-      console.log(`質問${questionIndex}に回答: ${choiceIndex}`);
-    }
-
-    function submitScore(player, score) {
-      fetch(`${GAS_URL}?action=updateScore&player=${encodeURIComponent(player)}&score=${score}`, {
-        method: 'GET'
-      })
+  function getQuestions() {
+    fetch(`${GAS_URL}?action=getQuestions`)
       .then(response => response.json())
       .then(data => {
-        alert('スコアが送信されました！');
-        console.log('スコア送信完了:', data);
+        questionData = data; // 後で回答チェックに使用
+        const questionContainer = document.getElementById('question-container');
+        let html = '';
+        data.forEach((q, index) => {
+          html += `
+            <div>
+              <p>${q.question}</p>
+              <button onclick="answerQuestion(${index}, 0)">A: ${q.choices[0]}</button>
+              <button onclick="answerQuestion(${index}, 1)">B: ${q.choices[1]}</button>
+              <button onclick="answerQuestion(${index}, 2)">C: ${q.choices[2]}</button>
+            </div>
+          `;
+        });
+        questionContainer.innerHTML = html;
       });
+  }
+
+  function answerQuestion(index, choiceIndex) {
+    const correctIndex = parseInt(questionData[index].answer, 10); // GASのデータは文字列の可能性もあるため数値化
+    if (choiceIndex === correctIndex) {
+      score += 10;
+      alert('正解！ +10点');
+    } else {
+      alert('不正解...');
     }
+  }
 
-    document.getElementById('submit-score').addEventListener('click', function() {
-      const playerName = document.getElementById('player-name').value.trim();
-      if (!playerName) {
-        alert('プレイヤー名を入力してください。');
-        return;
-      }
-      submitScore(playerName, score);
+  function submitScore(player, score) {
+    fetch(`${GAS_URL}?action=updateScore&player=${encodeURIComponent(player)}&score=${score}`, {
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert('スコアが送信されました！');
     });
+  }
 
-    getQuestions();
-  </script>
+  document.getElementById('submit-score').addEventListener('click', function() {
+    const playerName = document.getElementById('player-name').value.trim();
+    if (!playerName) {
+      alert('プレイヤー名を入力してください。');
+      return;
+    }
+    submitScore(playerName, score);
+  });
+
+  getQuestions();
+</script>
 </body>
 </html>
