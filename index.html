@@ -7,19 +7,28 @@
 </head>
 <body>
   <h1>クイズゲーム</h1>
+
+  <!-- プレイヤー名の入力欄 -->
+  <div>
+    <label for="player-name">プレイヤー名:</label>
+    <input type="text" id="player-name" placeholder="名前を入力">
+  </div>
+
+  <!-- 質問表示 -->
   <div id="question-container"></div>
+
+  <!-- スコア送信ボタン -->
   <button id="submit-score">スコアを送信</button>
 
   <script>
-    // Google Apps ScriptのWebアプリURL
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
 
-    // 質問を取得する関数
+    let score = 0; // スコア変数（後で加算処理を入れる）
+
     function getQuestions() {
       fetch(`${GAS_URL}?action=getQuestions`)
         .then(response => response.json())
         .then(data => {
-          // 質問をページに表示
           const questionContainer = document.getElementById('question-container');
           let html = '';
           data.forEach((q, index) => {
@@ -36,30 +45,38 @@
         });
     }
 
-    // 回答を処理する関数
     function answerQuestion(questionIndex, choiceIndex) {
-      // ここで選択肢をチェックして、正解ならスコアを加算
+      // 正解チェック（仮に0が正解として例）
+      if (choiceIndex === 0) {
+        score += 10;
+        alert('正解！ +10点');
+      } else {
+        alert('不正解...');
+      }
       console.log(`質問${questionIndex}に回答: ${choiceIndex}`);
     }
 
-    // スコアを送信する関数
     function submitScore(player, score) {
-      fetch(`${GAS_URL}?action=updateScore&player=${player}&score=${score}`, {
+      fetch(`${GAS_URL}?action=updateScore&player=${encodeURIComponent(player)}&score=${score}`, {
         method: 'GET'
       })
       .then(response => response.json())
       .then(data => {
-        console.log('スコアが正常に更新されました');
+        alert('スコアが送信されました！');
+        console.log('スコア送信完了:', data);
       });
     }
 
-    // ページ読み込み時に質問を取得
-    getQuestions();
-
-    // スコアを送信ボタン
     document.getElementById('submit-score').addEventListener('click', function() {
-      submitScore('プレイヤー1', 100);  // 例: プレイヤー1のスコアを100に更新
+      const playerName = document.getElementById('player-name').value.trim();
+      if (!playerName) {
+        alert('プレイヤー名を入力してください。');
+        return;
+      }
+      submitScore(playerName, score);
     });
+
+    getQuestions();
   </script>
 </body>
 </html>
