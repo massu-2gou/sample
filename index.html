@@ -1,17 +1,65 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <title>Dry Flower Life</title>
-    <meta name="description" content="趣味のドライフラワーを紹介するプロフィールサイトです。これまでに作った作品を掲載していますので、よろしければご覧になってみてください。">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="img/favicon.ico">
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
-    <link rel="stylesheet" href="style.css">
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クイズゲーム</title>
+</head>
+<body>
+  <h1>クイズゲーム</h1>
+  <div id="question-container"></div>
+  <button id="submit-score">スコアを送信</button>
 
-  <body>
-    あ
-  </body>
+  <script>
+    // Google Apps ScriptのWebアプリURL
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
+
+    // 質問を取得する関数
+    function getQuestions() {
+      fetch(`${GAS_URL}?action=getQuestions`)
+        .then(response => response.json())
+        .then(data => {
+          // 質問をページに表示
+          const questionContainer = document.getElementById('question-container');
+          let html = '';
+          data.forEach((q, index) => {
+            html += `
+              <div>
+                <p>${q.question}</p>
+                <button onclick="answerQuestion(${index}, 0)">A: ${q.choices[0]}</button>
+                <button onclick="answerQuestion(${index}, 1)">B: ${q.choices[1]}</button>
+                <button onclick="answerQuestion(${index}, 2)">C: ${q.choices[2]}</button>
+              </div>
+            `;
+          });
+          questionContainer.innerHTML = html;
+        });
+    }
+
+    // 回答を処理する関数
+    function answerQuestion(questionIndex, choiceIndex) {
+      // ここで選択肢をチェックして、正解ならスコアを加算
+      console.log(`質問${questionIndex}に回答: ${choiceIndex}`);
+    }
+
+    // スコアを送信する関数
+    function submitScore(player, score) {
+      fetch(`${GAS_URL}?action=updateScore&player=${player}&score=${score}`, {
+        method: 'GET'
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('スコアが正常に更新されました');
+      });
+    }
+
+    // ページ読み込み時に質問を取得
+    getQuestions();
+
+    // スコアを送信ボタン
+    document.getElementById('submit-score').addEventListener('click', function() {
+      submitScore('プレイヤー1', 100);  // 例: プレイヤー1のスコアを100に更新
+    });
+  </script>
+</body>
 </html>
