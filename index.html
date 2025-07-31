@@ -11,7 +11,7 @@
 
     <!-- 登録済みユーザー -->
     <section>
-        <p>もう使ったことがあるひと：</p>
+        <p>すでにヒーローのひと：</p>
         <input type="text" id="nicknameInput" placeholder="ニックネームを入力">
         <button id="checkNickname">次へ</button>
     </section>
@@ -22,7 +22,7 @@
     <section>
         <p>初めて使うひと：</p>
         <input type="text" id="newNicknameInput" placeholder="新しく使いたいニックネーム">
-        <button id="registerNickname">登録して始める</button>
+        <button id="registerNickname">新しいヒーローとして始める</button>
     </section>
 
     <p id="statusMessage"></p>
@@ -41,7 +41,7 @@
                 return;
             }
 
-            status.textContent = '確認中...';
+            status.textContent = 'かくにん中...';
             status.style.color = 'black';
 
             try {
@@ -52,11 +52,11 @@
                     localStorage.setItem('nickname', nickname);
                     window.location.href = 'reflection.html';
                 } else {
-                    status.textContent = '登録されていません。初めての方は下の欄から登録してください。';
-                    status.style.color = 'orange';
+                    status.textContent = 'もしかして初めて？下の四角の中にニックネームを入れてね。';
+                    status.style.color = 'red';
                 }
             } catch (error) {
-                status.textContent = '確認中にエラーが発生しました。';
+                status.textContent = 'エラーが発生しました。先生に教えてね。';
                 status.style.color = 'red';
                 console.error(error);
             }
@@ -73,7 +73,7 @@
                 return;
             }
 
-            status.textContent = '登録確認中...';
+            status.textContent = 'かくにん中...';
             status.style.color = 'black';
 
             try {
@@ -100,15 +100,15 @@
                         localStorage.setItem('nickname', newNickname);
                         window.location.href = 'reflection.html';
                     } else {
-                        status.textContent = '登録に失敗しました。';
+                        status.textContent = '登録に失敗しました。先生に教えてね。';
                         status.style.color = 'red';
                     }
                 } else {
-                    status.textContent = 'このニックネームは既に使われています。別の名前にしてください。';
+                    status.textContent = 'このニックネームはもう使われています。べつの名前にしてください。';
                     status.style.color = 'red';
                 }
             } catch (error) {
-                status.textContent = '登録処理中にエラーが発生しました。';
+                status.textContent = 'エラーが発生しました。先生に教えてね。';
                 status.style.color = 'red';
                 console.error(error);
             }
