@@ -9,8 +9,8 @@ if (goToReflectionBtn) {
     goToReflectionBtn.addEventListener('click', () => verifyNicknameAndRedirect('reflection.html'));
 }
 if (goToKobakitalandBtn) {
-    goToKobakitalandBtn.addEventListener('click', () => verifyNicknameAndRedirect('kobakitaland.html'));
-}
+    goToKobakitalandBtn.addEventListener('click', () => verifyNicknameAndRedirect('kobakitaland/kobakitaland.html'));
+
 if (registerBtn) {
     registerBtn.addEventListener('click', registerNickname);
 }
