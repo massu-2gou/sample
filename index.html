@@ -13,8 +13,8 @@
     <section style="text-align: center;">
         <p>来たことのあるひと：</p>
         <input type="text" id="nicknameInput" placeholder="ニックネームを入力">
-        <button id="checkNickname">カードおき場に行く</button>
-        <button id="kobakitaland">コバキタランドに行く</button>
+        <button id="goToReflection">カードおき場に行く</button>
+        <button id="goToKobakitaland">コバキタランドに行く</button>
     </section>
 
     <hr>
@@ -28,123 +28,6 @@
 
     <p id="statusMessage"></p>
 
-    <script>
-        const gasUrl = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
-
-        // ニックネーム確認してスーパーカードへ
-        document.getElementById('checkNickname').addEventListener('click', async () => {
-            const nickname = document.getElementById('nicknameInput').value.trim();
-            const status = document.getElementById('statusMessage');
-
-            if (!nickname) {
-                status.textContent = 'ニックネームを入力してください。';
-                status.style.color = 'red';
-                return;
-            }
-
-            status.textContent = 'かくにん中...';
-            status.style.color = 'black';
-
-            try {
-                const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
-                const data = await response.json();
-
-                if (data.status === 'success' && data.keywords.length > 0) {
-                    localStorage.setItem('nickname', nickname);
-                    window.location.href = 'reflection.html';
-                } else {
-                    status.textContent = 'もしかして初めて？下の四角にニックネームを入れてね。';
-                    status.style.color = 'red';
-                }
-            } catch (error) {
-                status.textContent = '確認中にエラーが発生しました。';
-                status.style.color = 'red';
-                console.error(error);
-            }
-        });
-
-        // ニックネーム確認してコバキタランドへ
-        document.getElementById('checkNickname').addEventListener('click', async () => {
-            const nickname = document.getElementById('nicknameInput').value.trim();
-            const status = document.getElementById('statusMessage');
-
-            if (!nickname) {
-                status.textContent = 'ニックネームを入力してください。';
-                status.style.color = 'red';
-                return;
-            }
-
-            status.textContent = 'かくにん中...';
-            status.style.color = 'black';
-
-            try {
-                const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
-                const data = await response.json();
-
-                if (data.status === 'success' && data.keywords.length > 0) {
-                    localStorage.setItem('nickname', nickname);
-                    window.location.href = 'kobakitaland.html';
-                } else {
-                    status.textContent = 'もしかして初めて？下の四角にニックネームを入れてね。';
-                    status.style.color = 'red';
-                }
-            } catch (error) {
-                status.textContent = '確認中にエラーが発生しました。';
-                status.style.color = 'red';
-                console.error(error);
-            }
-        });
-        // 新規登録
-        document.getElementById('registerNickname').addEventListener('click', async () => {
-            const newNickname = document.getElementById('newNicknameInput').value.trim();
-            const status = document.getElementById('statusMessage');
-
-            if (!newNickname) {
-                status.textContent = '新しいニックネームを入力してください。';
-                status.style.color = 'red';
-                return;
-            }
-
-            status.textContent = '登録確認中...';
-            status.style.color = 'black';
-
-            try {
-                const checkResponse = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(newNickname)}`);
-                const checkData = await checkResponse.json();
-
-                if (checkData.status === 'success' && checkData.keywords.length === 0) {
-                    // 新しいニックネームとして保存
-                    const saveResponse = await fetch(gasUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'text/plain;charset=utf-8'
-                        },
-                        body: JSON.stringify({
-                            action: 'saveKeyword',
-                            nickname: newNickname,
-                            keyword: '初回登録'
-                        })
-                    });
-
-                    const saveData = await saveResponse.json();
-
-                    if (saveData.status === 'success') {
-                        localStorage.setItem('nickname', newNickname);
-                        window.location.href = 'reflection.html';
-                    } else {
-                        status.textContent = '登録に失敗しました。';
-                        status.style.color = 'red';
-                    }
-                } else {
-                    status.textContent = 'このニックネームは既に使われています。別の名前にしてください。';
-                    status.style.color = 'red';
-                }
-            } catch (error) {
-                status.textContent = '登録処理中にエラーが発生しました。';
-                status.style.color = 'red';
-                console.error(error);
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
