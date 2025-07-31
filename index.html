@@ -1,82 +1,45 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>クイズゲーム</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>児童の学習ツール</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>クイズゲーム</h1>
 
-  <!-- プレイヤー名の入力欄 -->
-  <div>
-    <label for="player-name">プレイヤー名:</label>
-    <input type="text" id="player-name" placeholder="名前を入力">
-  </div>
+    <h1>今日の学習を振り返ろう！</h1>
 
-  <!-- 質問表示 -->
-  <div id="question-container"></div>
+    <!-- キーワード入力セクション -->
+    <div class="section-container">
+        <h2>今日のキーワードを保存する</h2>
+        <div class="input-group">
+            <label for="nickname">ニックネーム:</label>
+            <input type="text" id="nickname" placeholder="ニックネームを入力してください" required>
+        </div>
+        <div class="input-group">
+            <label for="keywordInput">今日のキーワード:</label>
+            <textarea id="keywordInput" rows="5" placeholder="今日の授業で大切だと思ったことを自由に書いてみよう！"></textarea>
+        </div>
+        <button id="saveKeyword">キーワードを保存</button>
+        <p id="saveStatus" class="status-message"></p>
+    </div>
 
-  <!-- スコア送信ボタン -->
-  <button id="submit-score">スコアを送信</button>
+    <!-- キーワード表示セクション -->
+    <div class="section-container">
+        <h2>これまでのキーワードを見る</h2>
+        <div class="input-group">
+            <label for="displayNickname">ニックネーム:</label>
+            <input type="text" id="displayNickname" placeholder="自分のニックネームを入力" required>
+        </div>
+        <button id="showKeywords">キーワードを表示</button>
+        <p id="displayStatus" class="status-message"></p>
+        <div id="keywordListContainer" class="keyword-list-container">
+            <!-- キーワードがここに表示されます -->
+        </div>
+    </div>
 
-  <script>
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
+    <script src="script.js"></script>
 
-  let score = 0;
-  let questionData = []; // 質問データを保存
-
-  function getQuestions() {
-    fetch(`${GAS_URL}?action=getQuestions`)
-      .then(response => response.json())
-      .then(data => {
-        questionData = data; // 後で回答チェックに使用
-        const questionContainer = document.getElementById('question-container');
-        let html = '';
-        data.forEach((q, index) => {
-          html += `
-            <div>
-              <p>${q.question}</p>
-              <button onclick="answerQuestion(${index}, 0)">A: ${q.choices[0]}</button>
-              <button onclick="answerQuestion(${index}, 1)">B: ${q.choices[1]}</button>
-              <button onclick="answerQuestion(${index}, 2)">C: ${q.choices[2]}</button>
-            </div>
-          `;
-        });
-        questionContainer.innerHTML = html;
-      });
-  }
-
-  function answerQuestion(index, choiceIndex) {
-    const correctIndex = parseInt(questionData[index].answer, 10); // GASのデータは文字列の可能性もあるため数値化
-    if (choiceIndex === correctIndex) {
-      score += 10;
-      alert('正解！ +10点');
-    } else {
-      alert('不正解...');
-    }
-  }
-
-  function submitScore(player, score) {
-    fetch(`${GAS_URL}?action=updateScore&player=${encodeURIComponent(player)}&score=${score}`, {
-      method: 'GET'
-    })
-    .then(response => response.json())
-    .then(data => {
-      alert('スコアが送信されました！');
-    });
-  }
-
-  document.getElementById('submit-score').addEventListener('click', function() {
-    const playerName = document.getElementById('player-name').value.trim();
-    if (!playerName) {
-      alert('プレイヤー名を入力してください。');
-      return;
-    }
-    submitScore(playerName, score);
-  });
-
-  getQuestions();
-</script>
 </body>
 </html>
