@@ -1,19 +1,19 @@
-/* ページ全体の基本的なスタイリング */
+/* ========== 基本レイアウト ========== */
 body {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* 上部に寄せる */
+    justify-content: flex-start;
     align-items: center;
-    min-height: 100vh; /* 画面全体の高さ */
+    min-height: 100vh;
     margin: 0;
-    padding: 20px; /* 上下の余白 */
-    background: linear-gradient(to right, #ff9a9e, #fad0c4); /* グラデーション背景 */
+    padding: 20px;
+    background: linear-gradient(to right, #ff9a9e, #fad0c4);
     font-family: 'Arial', sans-serif;
     color: #333;
-    box-sizing: border-box; /* パディングを幅に含める */
+    box-sizing: border-box;
 }
 
-/* ぼかし背景画像：index.html専用 */
+/* index.html 専用の背景画像＋ぼかし */
 .blur-background::before {
     content: "";
     position: fixed;
@@ -27,36 +27,35 @@ body {
     filter: blur(10px);
     opacity: 0.6;
     z-index: -1;
-    pointer-events: none; /* 背景のクリックを無効化 */
+    pointer-events: none;
 }
 
-
+/* ========== 見出し ========== */
 h1 {
     color: #fff;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     margin-bottom: 30px;
 }
 
 h2 {
     color: #555;
-    margin-top: 0;
-    margin-bottom: 20px;
+    margin: 0 0 20px;
     text-align: center;
 }
 
-/* 各セクションのコンテナ */
+/* ========== セクションコンテナ ========== */
 .section-container {
     background-color: #ffffff;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
     width: 90%;
     max-width: 600px;
     box-sizing: border-box;
 }
 
-/* 入力グループのスタイリング */
+/* ========== 入力フィールド ========== */
 .input-group {
     margin-bottom: 15px;
 }
@@ -75,56 +74,56 @@ h2 {
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1em;
-    box-sizing: border-box; /* パディングを幅に含める */
+    box-sizing: border-box;
 }
 
 .input-group textarea {
-    resize: vertical; /* 垂直方向のみリサイズ可能に */
+    resize: vertical;
 }
 
-/* ボタンのスタイリング */
+/* ========== ボタン ========== */
 button {
     padding: 12px 25px;
     font-size: 1.1em;
     font-weight: bold;
     color: white;
-    background: #007bff; /* 青系のボタン */
+    background: #007bff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%; /* 幅を親要素に合わせる */
+    width: 100%;
     box-sizing: border-box;
     margin-top: 10px;
 }
 
 button:hover {
-    background: #0056b3; /* ホバーで少し濃く */
-    transform: translateY(-2px); /* わずかに浮き上がる */
+    background: #0056b3;
+    transform: translateY(-2px);
 }
 
-/* ステータスメッセージ */
+/* ========== ステータスメッセージ ========== */
 .status-message {
     text-align: center;
     margin-top: 15px;
     font-weight: bold;
-    min-height: 1.2em; /* メッセージがないときも高さを確保 */
+    min-height: 1.2em;
 }
 
-/* キーワードリストのコンテナ */
+/* ========== キーワードリスト ========== */
 .keyword-list-container {
     background-color: #f9f9f9;
     border: 1px solid #eee;
     border-radius: 8px;
     padding: 15px;
     margin-top: 20px;
-    max-height: 300px; /* 高さを制限してスクロール可能に */
-    overflow-y: auto; /* 縦方向スクロール */
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .keyword-list-container ul {
-    list-style: none; /* デフォルトのリストスタイルを削除 */
+    list-style: none;
     padding: 0;
     margin: 0;
 }
@@ -136,31 +135,29 @@ button:hover {
     border-radius: 5px;
     font-size: 0.95em;
     color: #444;
-    word-wrap: break-word; /* 長いキーワードを折り返す */
+    word-wrap: break-word;
 }
 
 .keyword-list-container li:last-child {
     margin-bottom: 0;
 }
 
-/* アコーディオンメニューのセクションタイトル */
+/* ========== アコーディオン ========== */
 .accordion-section-title {
-    margin-top: 30px;
-    margin-bottom: 20px;
+    margin: 30px 0 20px;
     width: 90%;
     max-width: 600px;
     text-align: center;
 }
 
-/* アコーディオンメニューのスタイリング */
 .accordion_item {
     border: 1px solid #ddd;
     margin-bottom: 10px;
     border-radius: 5px;
     overflow: hidden;
-    width: 90%; /* 幅を調整 */
-    max-width: 600px; /* 最大幅を設定 */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .accordion_title {
@@ -183,22 +180,19 @@ button:hover {
     transition: max-height 0.3s ease-out, padding 0.3s ease-out;
     background-color: #fff;
     padding: 0 15px;
-    overflow: hidden; /* 内容がはみ出さないように */
+    overflow: hidden;
 }
 
 .accordion_content p {
-    padding-top: 15px; /* 表示時にパディングを戻す */
-    padding-bottom: 15px;
+    padding: 15px 0;
     margin: 0;
 }
 
-/* JavaScriptで追加されるクラス */
 .accordion_item.active .accordion_content {
-    max-height: 200px; /* 内容に合わせて調整してください。十分な高さを持たせる */
-    /* padding-top と padding-bottom は .accordion_content p で設定済み */
+    max-height: 200px;
 }
 
-/* レスポンシブ対応 */
+/* ========== レスポンシブ対応 ========== */
 @media (max-width: 768px) {
     .section-container,
     .accordion_item {
