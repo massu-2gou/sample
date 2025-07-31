@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ニックネーム確認</title>
+</head>
+<body>
+    <h1>ようこそ！</h1>
+    <p>ニックネームを入力してください。</p>
+
+    <input type="text" id="nicknameInput" placeholder="ニックネーム">
+    <button id="checkNickname">次へ</button>
+
+    <div id="newNicknameSection" style="display: none;">
+        <p>このニックネームは未登録です。新規登録できます。</p>
+        <button id="registerNickname">ニックネームを登録して開始</button>
+    </div>
+
+    <p id="statusMessage"></p>
+
+    <script>
+        const gasUrl = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
+
+        document.getElementById('checkNickname').addEventListener('click', async () => {
+            const nickname = document.getElementById('nicknameInput').value.trim();
+            const status = document.getElementById('statusMessage');
+            const newSection = document.getElementById('newNicknameSection');
+
+            if (!nickname) {
+                status.textContent = 'ニックネームを入力してください。';
+                status.style.color = 'red';
+                return;
+            }
+
+            status.textContent = '確認中...';
+            status.style.color = 'black';
+
+            try {
+                const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.keywords.length > 0) {
+                    // ニックネームがすでに登録済み
+                    localStorage.setItem('nickname', nickname); // 保存して後で使えるように
+                    window.location.href = 'index.html'; // 遷移
+                } else {
+                    // 登録されていない
+                    status.textContent = '未登録のニックネームです。';
+                    status.style.color = 'orange';
+                    newSection.style.display = 'block';
+                }
+            } catch (error) {
+                status.textContent = '確認中にエラーが発生しました。';
+                status.style.color = 'red';
+                console.error(error);
+            }
+        });
+
+        document.getElementById('registerNickname').addEventListener('click', () => {
+            const nickname = document.getElementById('nicknameInput').value.trim();
+            if (nickname) {
+                localStorage.setItem('nickname', nickname); // 保存
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
