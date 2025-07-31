@@ -128,3 +128,15 @@ accordionTitles.forEach(title => {
         });
     });
 });
+
+// ページ読み込み時にlocalStorageからニックネームを読み込む
+window.addEventListener('DOMContentLoaded', () => {
+    const savedNickname = localStorage.getItem('nickname');
+    if (savedNickname) {
+        const nicknameField = document.getElementById('nickname');
+        const displayNicknameField = document.getElementById('displayNickname');
+        if (nicknameField) nicknameField.value = savedNickname;
+        if (displayNicknameField) displayNicknameField.value = savedNickname;
+    }
+});
+
