@@ -3,116 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ニックネーム確認</title>
+    <title>これはもはやまっすー３号</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="blur-background">
-    <h1>ようこそ！</h1>
 
-    <!-- 登録済みユーザー -->
-    <section>
-        <p>すでにヒーローのひと：</p>
-        <input type="text" id="nicknameInput" placeholder="ニックネームを入力">
-        <button id="checkNickname">次へ</button>
-    </section>
+    <h1>ようこそ、これはもはやまっすー３号！</h1>
 
-    <hr>
+    <!-- 入力セクション -->
+    <div class="section-container">
+        <h2>ニックネームを入力してください</h2>
+        <div class="input-group" style="text-align: center;">
+            <label for="nicknameInput" style="display: block;">ニックネーム:</label>
+            <input type="text" id="nicknameInput" placeholder="例: まっすー" style="margin: 0 auto;">
+        </div>
 
-    <!-- 新規登録ユーザー -->
-    <section>
-        <p>初めて使うひと：</p>
-        <input type="text" id="newNicknameInput" placeholder="新しく使いたいニックネーム">
-        <button id="registerNickname">新しいヒーローとして始める</button>
-    </section>
+        <!-- ボタンを横に並べる -->
+        <div class="button-group" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+            <button id="goNext">次へ</button>
+            <a href="kobakitaland.html" class="btn-link">遊園地へ</a>
+        </div>
 
-    <p id="statusMessage"></p>
+        <p id="errorMessage" class="status-message"></p>
+    </div>
 
     <script>
-        const gasUrl = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
+        document.getElementById("goNext").addEventListener("click", function () {
+            const nickname = document.getElementById("nicknameInput").value.trim();
+            const errorMessage = document.getElementById("errorMessage");
 
-        // 登録済みユーザーのニックネーム確認
-        document.getElementById('checkNickname').addEventListener('click', async () => {
-            const nickname = document.getElementById('nicknameInput').value.trim();
-            const status = document.getElementById('statusMessage');
-
-            if (!nickname) {
-                status.textContent = 'ニックネームを入力してください。';
-                status.style.color = 'red';
+            if (nickname === "") {
+                errorMessage.textContent = "ニックネームを入力してください。";
                 return;
             }
 
-            status.textContent = 'かくにん中...';
-            status.style.color = 'black';
-
-            try {
-                const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
-                const data = await response.json();
-
-                if (data.status === 'success' && data.keywords.length > 0) {
-                    localStorage.setItem('nickname', nickname);
-                    window.location.href = 'reflection.html';
-                } else {
-                    status.textContent = 'もしかして初めて？下の四角の中にニックネームを入れてね。';
-                    status.style.color = 'red';
-                }
-            } catch (error) {
-                status.textContent = 'エラーが発生しました。先生に教えてね。';
-                status.style.color = 'red';
-                console.error(error);
-            }
-        });
-
-        // 新規登録
-        document.getElementById('registerNickname').addEventListener('click', async () => {
-            const newNickname = document.getElementById('newNicknameInput').value.trim();
-            const status = document.getElementById('statusMessage');
-
-            if (!newNickname) {
-                status.textContent = '新しいニックネームを入力してください。';
-                status.style.color = 'red';
-                return;
-            }
-
-            status.textContent = 'かくにん中...';
-            status.style.color = 'black';
-
-            try {
-                const checkResponse = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(newNickname)}`);
-                const checkData = await checkResponse.json();
-
-                if (checkData.status === 'success' && checkData.keywords.length === 0) {
-                    // 新しいニックネームとして保存
-                    const saveResponse = await fetch(gasUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'text/plain;charset=utf-8'
-                        },
-                        body: JSON.stringify({
-                            action: 'saveKeyword',
-                            nickname: newNickname,
-                            keyword: '初回登録'
-                        })
-                    });
-
-                    const saveData = await saveResponse.json();
-
-                    if (saveData.status === 'success') {
-                        localStorage.setItem('nickname', newNickname);
-                        window.location.href = 'reflection.html';
-                    } else {
-                        status.textContent = '登録に失敗しました。先生に教えてね。';
-                        status.style.color = 'red';
-                    }
-                } else {
-                    status.textContent = 'このニックネームはもう使われています。べつの名前にしてください。';
-                    status.style.color = 'red';
-                }
-            } catch (error) {
-                status.textContent = 'エラーが発生しました。先生に教えてね。';
-                status.style.color = 'red';
-                console.error(error);
-            }
+            localStorage.setItem("nickname", nickname);
+            window.location.href = "reflection.html";
         });
     </script>
+
 </body>
 </html>
+
