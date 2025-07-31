@@ -13,7 +13,8 @@
     <section style="text-align: center;">
         <p>すでにコバリアンのひと：</p>
         <input type="text" id="nicknameInput" placeholder="ニックネームを入力">
-        <button id="checkNickname">ふりかえりへ</button>
+        <button id="checkNickname">スーパーカードに行く</button>
+        <button id="kobakitaland">コバキタランドに行く</button>
     </section>
 
     <hr>
@@ -30,7 +31,7 @@
     <script>
         const gasUrl = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
 
-        // 登録済みユーザーのニックネーム確認
+        // ニックネーム確認してスーパーカードへ
         document.getElementById('checkNickname').addEventListener('click', async () => {
             const nickname = document.getElementById('nicknameInput').value.trim();
             const status = document.getElementById('statusMessage');
@@ -62,6 +63,37 @@
             }
         });
 
+        // ニックネーム確認してコバキタランドへ
+        document.getElementById('checkNickname').addEventListener('click', async () => {
+            const nickname = document.getElementById('nicknameInput').value.trim();
+            const status = document.getElementById('statusMessage');
+
+            if (!nickname) {
+                status.textContent = 'ニックネームを入力してください。';
+                status.style.color = 'red';
+                return;
+            }
+
+            status.textContent = 'かくにん中...';
+            status.style.color = 'black';
+
+            try {
+                const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.keywords.length > 0) {
+                    localStorage.setItem('nickname', nickname);
+                    window.location.href = 'kobakitaland.html';
+                } else {
+                    status.textContent = 'もしかして初めて？下の四角にニックネームを入れてね。';
+                    status.style.color = 'red';
+                }
+            } catch (error) {
+                status.textContent = '確認中にエラーが発生しました。';
+                status.style.color = 'red';
+                console.error(error);
+            }
+        });
         // 新規登録
         document.getElementById('registerNickname').addEventListener('click', async () => {
             const newNickname = document.getElementById('newNicknameInput').value.trim();
