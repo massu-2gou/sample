@@ -15,7 +15,7 @@ document.getElementById('saveKeyword').addEventListener('click', async () => {
     saveStatus.textContent = '保存中...';
 
     try {
-        const response = await fetch('【GASのWebAppURL】', {
+        const response = await fetch(gasWebAppUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain;charset=utf-8'
