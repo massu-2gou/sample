@@ -9,7 +9,6 @@ body {
     position: absolute;
     width: 180px;
     height: 180px;
-    border-radius: 50%;
     object-fit: cover;
     box-shadow: 0 8px 32px rgba(80,180,250,0.2);
     animation: puka 3s ease-in-out infinite;
