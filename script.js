@@ -6,16 +6,16 @@ const goToKobakitalandBtn = document.getElementById('goToKobakitaland');
 const registerBtn = document.getElementById('registerNickname');
 
 if (goToReflectionBtn) {
-    goToReflectionBtn.addEventListener('click', () => verifyNicknameAndRedirect('reflection.html'));
+    goToReflectionBtn.addEventListener('click', () => verifyNicknameAndRedirect('reflection.html', goToReflectionBtn));
 }
 if (goToKobakitalandBtn) {
-    goToKobakitalandBtn.addEventListener('click', () => verifyNicknameAndRedirect('kobakitaland/kobakitaland.html'));
+    goToKobakitalandBtn.addEventListener('click', () => verifyNicknameAndRedirect('kobakitaland/kobakitaland.html', goToKobakitalandBtn));
 }
 if (registerBtn) {
-    registerBtn.addEventListener('click', registerNickname);
+    registerBtn.addEventListener('click', () => registerNickname(registerBtn));
 }
 
-async function verifyNicknameAndRedirect(targetPage) {
+async function verifyNicknameAndRedirect(targetPage, button) {
     const nickname = document.getElementById('nicknameInput').value.trim();
     const status = document.getElementById('statusMessage');
 
@@ -27,6 +27,7 @@ async function verifyNicknameAndRedirect(targetPage) {
 
     status.textContent = 'かくにん中...';
     status.style.color = 'black';
+    if (button) button.disabled = true; // ボタンを無効化
 
     try {
         const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
@@ -39,15 +40,17 @@ async function verifyNicknameAndRedirect(targetPage) {
         } else {
             status.textContent = 'もしかして初めて？下の四角にニックネームを入れてね。';
             status.style.color = 'red';
+            if (button) button.disabled = false; // 再有効化
         }
     } catch (error) {
         status.textContent = '確認中にエラーが発生しました。';
         status.style.color = 'red';
+        if (button) button.disabled = false; // 再有効化
         console.error(error);
     }
 }
 
-async function registerNickname() {
+async function registerNickname(button) {
     const newNickname = document.getElementById('newNicknameInput').value.trim();
     const status = document.getElementById('statusMessage');
 
@@ -59,6 +62,7 @@ async function registerNickname() {
 
     status.textContent = '登録確認中...';
     status.style.color = 'black';
+    if (button) button.disabled = true; // ボタンを無効化
 
     try {
         const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(newNickname)}`);
@@ -85,14 +89,17 @@ async function registerNickname() {
             } else {
                 status.textContent = '登録に失敗しました。';
                 status.style.color = 'red';
+                if (button) button.disabled = false; // 再有効化
             }
         } else {
             status.textContent = 'このニックネームは既に使われています。別の名前にしてください。';
             status.style.color = 'red';
+            if (button) button.disabled = false; // 再有効化
         }
     } catch (error) {
         status.textContent = '登録処理中にエラーが発生しました。';
         status.style.color = 'red';
+        if (button) button.disabled = false; // 再有効化
         console.error(error);
     }
 }
@@ -101,6 +108,7 @@ async function registerNickname() {
 const saveKeywordBtn = document.getElementById('saveKeyword');
 if (saveKeywordBtn) {
     saveKeywordBtn.addEventListener('click', async () => {
+        saveKeywordBtn.disabled = true;
         const nicknameInput = document.getElementById('nickname');
         const keywordInput = document.getElementById('keywordInput');
         const saveStatus = document.getElementById('saveStatus');
@@ -111,6 +119,7 @@ if (saveKeywordBtn) {
         if (!nickname || !keyword) {
             saveStatus.textContent = 'ニックネームとキーワードを入力してください。';
             saveStatus.style.color = 'red';
+            saveKeywordBtn.disabled = false;
             return;
         }
 
@@ -144,6 +153,8 @@ if (saveKeywordBtn) {
             console.error('保存エラー:', error);
             saveStatus.textContent = '保存中にエラーが発生しました。ネットワーク接続を確認してください。';
             saveStatus.style.color = 'red';
+        } finally {
+            saveKeywordBtn.disabled = false;
         }
     });
 }
@@ -152,6 +163,7 @@ if (saveKeywordBtn) {
 const showKeywordsBtn = document.getElementById('showKeywords');
 if (showKeywordsBtn) {
     showKeywordsBtn.addEventListener('click', async () => {
+        showKeywordsBtn.disabled = true;
         const displayNicknameInput = document.getElementById('displayNickname');
         const keywordListContainer = document.getElementById('keywordListContainer');
         const displayStatus = document.getElementById('displayStatus');
@@ -161,6 +173,7 @@ if (showKeywordsBtn) {
         if (!nicknameToDisplay) {
             displayStatus.textContent = 'ニックネームを入力してください。';
             displayStatus.style.color = 'red';
+            showKeywordsBtn.disabled = false;
             return;
         }
 
@@ -197,6 +210,8 @@ if (showKeywordsBtn) {
             console.error('取得エラー:', error);
             displayStatus.textContent = 'キーワード取得中にエラーが発生しました。ネットワーク接続を確認してください。';
             displayStatus.style.color = 'red';
+        } finally {
+            showKeywordsBtn.disabled = false;
         }
     });
 }
