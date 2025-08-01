@@ -5,29 +5,43 @@ body {
     overflow: hidden;
     background: #f0f8ff;
 }
-.float-btn {
+.float-img {
     position: absolute;
-    padding: 1em 2em;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 30px;
-    background: #4fc3f7;
-    color: #fff;
-    cursor: pointer;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
     box-shadow: 0 8px 32px rgba(80,180,250,0.2);
     animation: float 3s ease-in-out infinite;
     transition: transform 0.2s;
+    cursor: pointer;
+    border: none;
 }
-.float-btn:hover {
-    transform: scale(1.1);
+.float-img:hover {
+    transform: scale(1.08);
 }
-.top-left    { top: 30px; left: 30px; animation-delay: 0s; }
-.top-right   { top: 30px; right: 30px; animation-delay: 0.75s; }
-.bottom-left { bottom: 30px; left: 30px; animation-delay: 1.5s; }
-.bottom-right{ bottom: 30px; right: 30px; animation-delay: 2.25s; }
-
+.top-left {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+.top-right {
+    top: 10%;
+    right: 10%;
+    animation-delay: 0.75s;
+}
+.bottom-left {
+    bottom: 10%;
+    left: 10%;
+    animation-delay: 1.5s;
+}
+.bottom-right {
+    bottom: 10%;
+    right: 10%;
+    animation-delay: 2.25s;
+}
 @keyframes float {
-    0%   { transform: translateY(0px) scale(1); }
-    50%  { transform: translateY(-20px) scale(1.05);}
+    0%   { transform: translateY(0px) scale(1);}
+    50%  { transform: translateY(-24px) scale(1.06);}
     100% { transform: translateY(0px) scale(1);}
 }
