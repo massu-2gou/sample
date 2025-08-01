@@ -5,6 +5,15 @@ body {
     overflow: hidden;
     background: #f0f8ff;
 }
+body::before {
+    content: "";
+    position: fixed;
+    z-index: -1;
+    inset: 0;
+    background: url('https://i.imgur.com/L3PApDl.jpeg') center/cover no-repeat;
+    opacity: 0.5; /* ここで透明度調整 */
+    pointer-events: none;
+}
 .float-img {
     position: absolute;
     width: 250px;
