@@ -71,7 +71,7 @@ async function registerNickname() {
                     'Content-Type': 'text/plain;charset=utf-8'
                 },
                 body: JSON.stringify({
-                    action: 'saveKeyword',
+                    action: 'newdata',
                     nickname: newNickname,
                     keyword: '初回登録'
                 })
