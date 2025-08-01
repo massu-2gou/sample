@@ -10,7 +10,7 @@ if (goToReflectionBtn) {
 }
 if (goToKobakitalandBtn) {
     goToKobakitalandBtn.addEventListener('click', () => verifyNicknameAndRedirect('kobakitaland/kobakitaland.html'));
-
+}
 if (registerBtn) {
     registerBtn.addEventListener('click', registerNickname);
 }
