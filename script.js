@@ -1,5 +1,13 @@
 const gasUrl = 'https://script.google.com/macros/s/AKfycbyuGrOaIB4_xouWjfzSFBG5vKOiUlFJsgn1dEnNV6PGsrlfwUSmGHyyLtMC3e6JxME/exec';
 
+//他のボタンを押せないようにする
+function disableAllButtons(disabled = true) {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.disabled = disabled;
+    });
+}
+
 // ページ分岐（index.html）
 const goToReflectionBtn = document.getElementById('goToReflection');
 const goToKobakitalandBtn = document.getElementById('goToKobakitaland');
@@ -16,12 +24,14 @@ if (registerBtn) {
 }
 
 async function verifyNicknameAndRedirect(targetPage) {
+    disableAllButtons(true);
     const nickname = document.getElementById('nicknameInput').value.trim();
     const status = document.getElementById('statusMessage');
 
     if (!nickname) {
         status.textContent = 'ニックネームを入力してください。';
         status.style.color = 'red';
+        disableAllButtons(false);
         return;
     }
 
@@ -36,24 +46,29 @@ async function verifyNicknameAndRedirect(targetPage) {
             localStorage.setItem('nickname', nickname);
             status.textContent = '';
             window.location.href = targetPage;
+            disableAllButtons(false);
         } else {
             status.textContent = 'もしかして初めて？下の四角にニックネームを入れてね。';
             status.style.color = 'red';
+            disableAllButtons(false);
         }
     } catch (error) {
         status.textContent = '確認中にエラーが発生しました。';
         status.style.color = 'red';
         console.error(error);
+        disableAllButtons(false);
     }
 }
 
 async function registerNickname() {
+    disableAllButtons(true);
     const newNickname = document.getElementById('newNicknameInput').value.trim();
     const status = document.getElementById('statusMessage');
 
     if (!newNickname) {
         status.textContent = '新しいニックネームを入力してください。';
         status.style.color = 'red';
+        disableAllButtons(false);
         return;
     }
 
@@ -82,18 +97,22 @@ async function registerNickname() {
             if (saveData.status === 'success') {
                 localStorage.setItem('nickname', newNickname);
                 window.location.href = 'reflection.html';
+                disableAllButtons(false);
             } else {
                 status.textContent = '登録に失敗しました。';
                 status.style.color = 'red';
+                disableAllButtons(false);
             }
         } else {
             status.textContent = 'このニックネームは既に使われています。別の名前にしてください。';
             status.style.color = 'red';
+            disableAllButtons(false);
         }
     } catch (error) {
         status.textContent = '登録処理中にエラーが発生しました。';
         status.style.color = 'red';
         console.error(error);
+        disableAllButtons(false);
     }
 }
 
