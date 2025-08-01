@@ -34,6 +34,7 @@ async function verifyNicknameAndRedirect(targetPage) {
 
         if (data.status === 'success' && data.keywords.length > 0) {
             localStorage.setItem('nickname', nickname);
+            status.textContent = '';
             window.location.href = targetPage;
         } else {
             status.textContent = 'もしかして初めて？下の四角にニックネームを入れてね。';
