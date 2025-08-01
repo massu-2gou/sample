@@ -46,7 +46,6 @@ async function verifyNicknameAndRedirect(targetPage) {
             localStorage.setItem('nickname', nickname);
             status.textContent = '';
             window.location.href = targetPage;
-            disableAllButtons(false);
         } else {
             status.textContent = 'もしかして初めて？下の四角にニックネームを入れてね。';
             status.style.color = 'red';
@@ -97,7 +96,6 @@ async function registerNickname() {
             if (saveData.status === 'success') {
                 localStorage.setItem('nickname', newNickname);
                 window.location.href = 'reflection.html';
-                disableAllButtons(false);
             } else {
                 status.textContent = '登録に失敗しました。';
                 status.style.color = 'red';
