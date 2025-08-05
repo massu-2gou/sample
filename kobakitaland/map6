@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>こばきたランド地図</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    .map-container {
+      width: 100vw;
+      height: 100vh;
+      overflow: scroll;
+      position: relative;
+      background: #eee;
+    }
+    .map-image {
+      width: 2000px; /* 拡大サイズ調整可 */
+      height: auto;
+      display: block;
+    }
+    .map-button {
+      position: absolute;
+      /* 左上基準で座標を調整 */
+      left: 500px; /* 例: ボタン1のX座標 */
+      top: 400px;  /* 例: ボタン1のY座標 */
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.8);
+      border: 2px solid #555;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    /* 他ボタンはclassを増やして座標変更 */
+    .map-button2 {
+      left: 1200px;
+      top: 600px;
+    }
+  </style>
+</head>
+<body>
+  <div class="map-container">
+    <img src="https://i.imgur.com/L3PApDl.jpeg" alt="こばきたランド地図" class="map-image">
+    <!-- ボタン例: 座標調整で地図上に配置 -->
+    <button class="map-button" onclick="location.href='page1.html'">アトラクション1</button>
+    <button class="map-button map-button2" onclick="location.href='page2.html'">アトラクション2</button>
+    <!-- 必要な数だけbuttonを追加し、座標調整 -->
+  </div>
+</body>
+</html>
