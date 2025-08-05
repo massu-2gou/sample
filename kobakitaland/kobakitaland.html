@@ -29,8 +29,7 @@
     <script>
       // localStorageからニックネーム取得
       const nickname = localStorage.getItem('nickname') || '';
-      const message = nickname ? `こんにちは！${nickname}さん` : 'こんにちは！';
-        message += 'コバキタランドへようこそ!'
+      const message = nickname ? `こんにちは！${nickname}さん` : 'こんにちは！\\nコバキタランドへようこそ';
       document.getElementById('welcomeMessage').textContent = message;
     </script>
 </body>
