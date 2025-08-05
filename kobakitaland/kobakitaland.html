@@ -1,84 +1,36 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>こばきたランド地図</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-    .map-container {
-      width: 100vw;
-      height: 100vh;
-      overflow: scroll;
-      position: relative;
-      background: #eee;
-    }
-    .map-image {
-      width: 2000px;
-      height: auto;
-      display: block;
-    }
-    .image-button {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      overflow: hidden;
-      cursor: pointer;
-      border: none;
-      padding: 0;
-      background: none;
-    }
-    .image-button img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      border-radius: 50%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Kobakitaland</title>
+    <link rel="stylesheet" href="kobakitaland.css">
+    <style>
+      .center-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #404060;
+        text-shadow: 0 1px 8px #fff, 0 0px 20px #b5d6fc;
+        z-index: 10;
+        white-space: nowrap;
+        pointer-events: none; /* 画像クリック妨げない */
+      }
+    </style>
 </head>
 <body>
-  <div class="map-container">
-    <img src="https://i.imgur.com/L3PApDl.jpeg" alt="こばきたランド地図" class="map-image">
+    <div class="center-message" id="welcomeMessage"></div>
+    <img class="float-img top-left" src="https://ilapon.com/wp-content/uploads/2022/06/6nen-300x200.png" alt="６年生" onclick="location.href='map6.html'">
+    <img class="float-img top-right" src="https://ilapon.com/wp-content/uploads/2022/06/5nen-300x200.png" alt="５年生" onclick="alert('まだ作ってないよ！ごめんね！')">
+    <img class="float-img bottom-left" src="https://ilapon.com/wp-content/uploads/2022/06/4nen-1-300x200.png" alt="４年生" onclick="alert('まだ作ってないよ！ごめんね！')">
+    <img class="float-img bottom-right" src="https://ilapon.com/wp-content/uploads/2022/06/3nen-300x200.png" alt="３年生" onclick="alert('まだ作ってないよ！ごめんね！')">
     <script>
-      // ボタン情報（画像, 座標, 遷移先ページ）
-      const buttons = [
-        {
-          img: "https://i.imgur.com/aMapUbn.jpeg",
-          left: 500,
-          top: 400,
-          link: "minecart/minecart.html",
-          alt: "マインカート"
-        },
-        {
-          img: "https://i.imgur.com/xxxxxxx.jpeg", // 例: 別の画像
-          left: 800,
-          top: 600,
-          link: "page2.html",
-          alt: "観覧車"
-        },
-        // 必要に応じて追加
-      ];
-
-      // ボタンを生成して設置
-      buttons.forEach((btn, idx) => {
-        const button = document.createElement("button");
-        button.className = "image-button";
-        button.style.left = btn.left + "px";
-        button.style.top = btn.top + "px";
-        button.onclick = () => location.href = btn.link;
-
-        const img = document.createElement("img");
-        img.src = btn.img;
-        img.alt = btn.alt || "";
-        button.appendChild(img);
-
-        document.querySelector(".map-container").appendChild(button);
-      });
+      // localStorageからニックネーム取得
+      const nickname = localStorage.getItem('nickname') || '';
+      const message = nickname ? `こんにちは！${nickname}さん` : 'こんにちは！\\nコバキタランドへようこそ';
+      document.getElementById('welcomeMessage').textContent = message;
     </script>
-  </div>
 </body>
 </html>
