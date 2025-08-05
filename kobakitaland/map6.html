@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>こばきたランド地図6年生</title>
+  <title>こばきたランド地図</title>
   <style>
     body {
       margin: 0;
@@ -16,36 +16,78 @@
       background: #eee;
     }
     .map-image {
-      width: 2000px; /* 拡大サイズ調整可 */
+      width: 2000px;
       height: auto;
       display: block;
     }
-    .map-button {
+    .image-button {
       position: absolute;
-      /* 左上基準で座標を調整 */
-      left: 500px; /* 例: ボタン1のX座標 */
-      top: 400px;  /* 例: ボタン1のY座標 */
-      padding: 10px 20px;
-      background: rgba(255,255,255,0.8);
-      border: 2px solid #555;
-      border-radius: 8px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
       cursor: pointer;
-      font-size: 16px;
+      border: none;
+      padding: 0;
+      background: none;
+
+      /* 光るエフェクトを追加 */
+      box-shadow: 0 0 20px 6px #fffc7f, 0 0 40px 15px #ffe066 inset;
+      animation: glow 1.5s infinite alternate;
+      transition: box-shadow 0.3s;
     }
-    /* 他ボタンはclassを増やして座標変更 */
-    .map-button2 {
-      left: 1200px;
-      top: 600px;
+    .image-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 50%;
+    }
+    @keyframes glow {
+      0% {
+        box-shadow: 0 0 20px 6px #fffc7f, 0 0 40px 15px #ffe066 inset;
+      }
+      100% {
+        box-shadow: 0 0 40px 16px #ffe066, 0 0 60px 25px #fffbc1 inset;
+      }
     }
   </style>
 </head>
 <body>
   <div class="map-container">
     <img src="https://i.imgur.com/L3PApDl.jpeg" alt="こばきたランド地図" class="map-image">
-    <!-- ボタン例: 座標調整で地図上に配置 -->
-    <button class="map-button" onclick="location.href='page1.html'">アトラクション1</button>
-    <button class="map-button map-button2" onclick="location.href='page2.html'">アトラクション2</button>
-    <!-- 必要な数だけbuttonを追加し、座標調整 -->
+    <script>
+      // ボタン情報（画像, 座標, 遷移先ページ）
+      const buttons = [
+        {
+          img: "https://i.imgur.com/aMapUbn.jpeg",
+          left: 500,
+          top: 400,
+          link: "minecart.html",
+          alt: "マインカート"
+        },
+        {
+          img: "https://i.imgur.com/xxxxxxx.jpeg",
+          left: 800,
+          top: 600,
+          link: "page2.html",
+          alt: "観覧車"
+        },
+        // 必要に応じて追加
+      ];
+      buttons.forEach((btn, idx) => {
+        const button = document.createElement("button");
+        button.className = "image-button";
+        button.style.left = btn.left + "px";
+        button.style.top = btn.top + "px";
+        button.onclick = () => location.href = btn.link;
+        const img = document.createElement("img");
+        img.src = btn.img;
+        img.alt = btn.alt || "";
+        button.appendChild(img);
+        document.querySelector(".map-container").appendChild(button);
+      });
+    </script>
   </div>
 </body>
 </html>
