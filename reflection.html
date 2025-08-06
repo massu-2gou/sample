@@ -1,232 +1,42 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>振り返りカード</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-    }
-    .keyword-list {
-      border: 1px solid #ccc;
-      padding: 10px;
-      min-height: 50px;
-      margin-bottom: 20px;
-      background-color: #f9f9f9;
-    }
-    input, select, button {
-      padding: 8px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      cursor: pointer;
-    }
-    #statusMessage {
-      margin-top: 10px;
-      color: green;
-    }
-    #errorMessage {
-      margin-top: 10px;
-      color: red;
-    }
-    .btn-group {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    .btn-group button {
-      width: 48%;
-    }
-    #popularKeywords {
-      margin-top: 30px;
-      border-top: 1px solid #ccc;
-      padding-top: 15px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カードおき場</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>振り返りカード</h1>
 
-  <label for="nickname">ニックネーム:</label>
-  <input type="text" id="nickname" placeholder="ニックネームを入力してください" />
+    <h1>今日の学習を振り返ろう！</h1>
 
-  <label for="grade">学年:</label>
-  <select id="grade">
-    <option value="">学年を選択してください</option>
-    <option value="3年生">3年生</option>
-    <option value="4年生">4年生</option>
-    <option value="5年生">5年生</option>
-    <option value="6年生">6年生</option>
-  </select>
+    <!-- キーワード入力セクション -->
+    <div class="section-container">
+        <h2>今日のキーワードを保存する</h2>
+        <div class="input-group">
+            <label for="nickname">ニックネーム:</label>
+            <input type="text" id="nickname" placeholder="ニックネームを入力してください" required>
+        </div>
+        <div class="input-group">
+            <label for="keywordInput">今日のキーワード:</label>
+            <textarea id="keywordInput" rows="5" placeholder="今日の授業で大切だと思ったことを自由に書いてみよう！"></textarea>
+        </div>
+        <button id="saveKeyword">キーワードを保存</button>
+        <p id="saveStatus" class="status-message"></p>
+    </div>
 
-  <label for="keywordInput">今回の授業で重要と思ったキーワードを書いてみよう！:</label>
-  <input type="text" id="keywordInput" placeholder="キーワードを入力" />
+    <!-- キーワード表示セクション -->
+    <h1>今までの勉強をふりかえる</h1>
+    <div class="section-container">
+        <h2>これまでのキーワードを見る</h2>
+        <div class="input-group">
+            <label for="displayNickname">ニックネーム:</label>
+            <input type="text" id="displayNickname" placeholder="自分のニックネームを入力" required>
+        </div>
+        <button id="showKeywords">キーワードを表示</button>
+        <p id="displayStatus" class="status-message"></p>
+    </div>
 
-  <button id="saveKeywordBtn">キーワードを保存する</button>
-
-  <h2>自分のキーワード一覧</h2>
-  <div id="myKeywords" class="keyword-list">
-    <!-- ここに自分のキーワードが表示されます -->
-  </div>
-
-  <div class="btn-group">
-    <button id="goToIndexBtn">トップページへ戻る</button>
-    <button id="goToKobakiBtn">コバキタランドに行く</button>
-  </div>
-
-  <div id="statusMessage"></div>
-  <div id="errorMessage"></div>
-
-  <section id="popularKeywords">
-    <h2>人気キーワード（テキストマイニング結果）</h2>
-    <div id="popularKeywordsContent">読み込み中...</div>
-  </section>
-
-  <script>
-    const GAS_URL = 'https://script.google.com/macros/s/あなたのデプロイURL/exec';
-
-    // ニックネームと学年を取得
-    function getUserInfo() {
-      const nickname = document.getElementById('nickname').value.trim();
-      const grade = document.getElementById('grade').value;
-      return { nickname, grade };
-    }
-
-    // キーワード保存
-    async function saveKeyword() {
-      clearMessages();
-      const { nickname, grade } = getUserInfo();
-      const keyword = document.getElementById('keywordInput').value.trim();
-
-      if (!nickname) {
-        showError('ニックネームを入力してください。');
-        return;
-      }
-      if (!grade) {
-        showError('学年を選択してください。');
-        return;
-      }
-      if (!keyword) {
-        showError('キーワードを入力してください。');
-        return;
-      }
-
-      const payload = {
-        action: 'saveKeyword',
-        nickname,
-        keyword,
-        grade
-      };
-
-      try {
-        const res = await fetch(GAS_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          showStatus('キーワードを保存しました。');
-          document.getElementById('keywordInput').value = '';
-          loadMyKeywords();
-        } else {
-          showError('保存に失敗しました。');
-        }
-      } catch (error) {
-        showError('通信エラーが発生しました。');
-      }
-    }
-
-    // 自分のキーワードを取得・表示
-    async function loadMyKeywords() {
-      clearMessages();
-      const { nickname, grade } = getUserInfo();
-      if (!nickname) {
-        // ニックネーム未入力時は表示しない
-        document.getElementById('myKeywords').textContent = 'ニックネームを入力してください。';
-        return;
-      }
-
-      const url = new URL(GAS_URL);
-      url.searchParams.append('action', 'getKeywords');
-      url.searchParams.append('nickname', nickname);
-      url.searchParams.append('grade', grade);
-
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === 'success') {
-          const keywords = data.keywords;
-          if (keywords.length === 0) {
-            document.getElementById('myKeywords').textContent = 'まだキーワードがありません。';
-            return;
-          }
-          const list = keywords.map(row => {
-            // row = [ニックネーム, キーワード, タイムスタンプ, 学年]
-            const date = new Date(row[2]);
-            return `<div>・${row[1]} （${date.toLocaleString()}）</div>`;
-          }).join('');
-          document.getElementById('myKeywords').innerHTML = list;
-        } else {
-          document.getElementById('myKeywords').textContent = 'キーワードの取得に失敗しました。';
-        }
-      } catch (error) {
-        document.getElementById('myKeywords').textContent = '通信エラーが発生しました。';
-      }
-    }
-
-    // 人気キーワード表示（仮：後でテキストマイニングAPI呼び出しなどを実装）
-    async function loadPopularKeywords() {
-      // ここはサンプル表示。後でGASのtextminingアクションと連携してください
-      document.getElementById('popularKeywordsContent').textContent = '人気キーワードの解析中...';
-      // 実装例：fetchでtextminingアクションを呼び出して解析結果を表示する
-    }
-
-    function showStatus(msg) {
-      const el = document.getElementById('statusMessage');
-      el.textContent = msg;
-      el.style.color = 'green';
-    }
-
-    function showError(msg) {
-      const el = document.getElementById('errorMessage');
-      el.textContent = msg;
-      el.style.color = 'red';
-    }
-
-    function clearMessages() {
-      document.getElementById('statusMessage').textContent = '';
-      document.getElementById('errorMessage').textContent = '';
-    }
-
-    // ボタンイベント設定
-    document.getElementById('saveKeywordBtn').addEventListener('click', saveKeyword);
-
-    // ニックネーム・学年が変わったらキーワード読み込み更新
-    document.getElementById('nickname').addEventListener('change', loadMyKeywords);
-    document.getElementById('grade').addEventListener('change', loadMyKeywords);
-
-    // トップページへ戻る
-    document.getElementById('goToIndexBtn').addEventListener('click', () => {
-      window.location.href = 'index.html';
-    });
-
-    // ページロード時にキーワード読み込み
-    window.addEventListener('load', () => {
-      loadMyKeywords();
-      loadPopularKeywords();
-    });
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
