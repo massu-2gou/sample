@@ -187,7 +187,7 @@ if (window.location.pathname.endsWith('memorycard.html')) {
         displayStatus.style.color = 'blue';
 
         try {
-            const response = await fetch(`${gasUrl}?action=getKeywords=${encodeURIComponent(nickname)}`);
+            const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
             const data = await response.json();
 
             if (data.status === 'success') {
