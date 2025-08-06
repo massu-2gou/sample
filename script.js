@@ -165,62 +165,29 @@ if (saveKeywordBtn) {
     });
 }
 
-// ...省略（上部はそのまま）...
-
-// reflection.html の「これまでのキーワードを見る」ボタンで memorycard.html へ遷移
-const showKeywordsBtn = document.getElementById('showKeywords');
-if (showKeywordsBtn && window.location.pathname.endsWith('reflection.html')) {
-    showKeywordsBtn.addEventListener('click', () => {
-        const displayNicknameInput = document.getElementById('displayNickname');
-        const nicknameToDisplay = displayNicknameInput.value.trim();
-        if (!nicknameToDisplay) {
-            const displayStatus = document.getElementById('displayStatus');
-            displayStatus.textContent = 'ニックネームを入力してください。';
-            displayStatus.style.color = 'red';
-            return;
-        }
-        // ニックネームをlocalStorageに保存し、memorycard.htmlへ遷移
-        localStorage.setItem('nickname', nicknameToDisplay);
-        window.location.href = 'memorycard.html';
-    });
-}
-
-// memorycard.html でのキーワード表示ロジック
+//memorycard.htmlの処理
 if (window.location.pathname.endsWith('memorycard.html')) {
-    window.addEventListener('DOMContentLoaded', () => {
-        const displayNicknameInput = document.getElementById('displayNickname');
-        const savedNickname = localStorage.getItem('nickname');
-        if (displayNicknameInput && savedNickname) {
-            displayNicknameInput.value = savedNickname;
-        }
-        // ページ訪問時に自動でキーワード表示（任意。不要ならこのブロックを削除）
-        //if (savedNickname) showKeywordsForMemoryCard();
-    });
-
-    const showKeywordsBtn = document.getElementById('showKeywords');
-    if (showKeywordsBtn) {
-        showKeywordsBtn.addEventListener('click', showKeywordsForMemoryCard);
-    }
-
-    async function showKeywordsForMemoryCard() {
-        const displayNicknameInput = document.getElementById('displayNickname');
+    window.addEventListener('DOMContentLoaded', async () => {
+        const displayNicknameSpan = document.getElementById('displayNickname');
         const keywordListContainer = document.getElementById('keywordListContainer');
         const displayStatus = document.getElementById('displayStatus');
+        keywordListContainer.innerHTML = '';
+        displayStatus.textContent = '';
 
-        const nicknameToDisplay = displayNicknameInput.value.trim();
-
-        if (!nicknameToDisplay) {
-            displayStatus.textContent = 'ニックネームを入力してください。';
+        const nickname = localStorage.getItem('nickname');
+        if (!nickname) {
+            displayNicknameSpan.textContent = '（ニックネーム未設定）';
+            displayStatus.textContent = 'ニックネームが見つかりません。index.htmlからやり直してください。';
             displayStatus.style.color = 'red';
             return;
         }
+        displayNicknameSpan.textContent = nickname;
 
         displayStatus.textContent = 'キーワードを取得中...';
         displayStatus.style.color = 'blue';
-        keywordListContainer.innerHTML = '';
 
         try {
-            const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nicknameToDisplay)}`);
+            const response = await fetch(`${gasUrl}?action=getKeywords&nickname=${encodeURIComponent(nickname)}`);
             const data = await response.json();
 
             if (data.status === 'success') {
@@ -234,10 +201,10 @@ if (window.location.pathname.endsWith('memorycard.html')) {
                         ul.appendChild(li);
                     });
                     keywordListContainer.appendChild(ul);
-                    displayStatus.textContent = `${nicknameToDisplay}さんのキーワードを表示しました。`;
+                    displayStatus.textContent = `${nickname}さんのキーワードを表示しました。`;
                     displayStatus.style.color = 'green';
                 } else {
-                    displayStatus.textContent = `${nicknameToDisplay}さんのキーワードは見つかりませんでした。`;
+                    displayStatus.textContent = `${nickname}さんのキーワードは見つかりませんでした。`;
                     displayStatus.style.color = 'orange';
                 }
             } else {
@@ -249,16 +216,17 @@ if (window.location.pathname.endsWith('memorycard.html')) {
             displayStatus.textContent = 'キーワード取得中にエラーが発生しました。ネットワーク接続を確認してください。';
             displayStatus.style.color = 'red';
         }
-    }
+    });
 }
 
-//localStorageの復元
+// localStorage復元
 window.addEventListener('DOMContentLoaded', () => {
     const savedNickname = localStorage.getItem('nickname');
     if (savedNickname) {
         const nicknameField = document.getElementById('nickname');
         const displayNicknameField = document.getElementById('displayNickname');
+        // reflection.htmlのみ
         if (nicknameField) nicknameField.value = savedNickname;
-        if (displayNicknameField && !window.location.pathname.endsWith('memorycard.html')) displayNicknameField.value = savedNickname;
+        if (displayNicknameField && window.location.pathname.endsWith('reflection.html')) displayNicknameField.value = savedNickname;
     }
 });
