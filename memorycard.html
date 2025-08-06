@@ -1,38 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>これまでのふりかえり</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>これまでのふりかえり</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>これまでのふりかえり</h1>
-
-  <div class="section-container">
-    <h2>キーワード一覧</h2>
-
-    <div class="input-group">
-      <label for="displayNickname">ニックネーム:</label>
-      <input type="text" id="displayNickname" placeholder="自分のニックネームを入力" required />
+    <h1>これまでのふりかえり</h1>
+    <div class="section-container">
+        <h2>キーワード一覧</h2>
+        <div class="input-group">
+            <label for="displayNickname">ニックネーム:</label>
+            <input type="text" id="displayNickname" placeholder="自分のニックネームを入力" required>
+        </div>
+        <button id="showKeywords">キーワードを表示</button>
+        <p id="displayStatus" class="status-message"></p>
+        <div id="keywordListContainer" class="keyword-list-container">
+            <!-- キーワードがここに表示されます -->
+        </div>
     </div>
-
-    <div class="input-group">
-      <label for="displayGrade">学年:</label>
-      <select id="displayGrade" required>
-        <option value="">-- 学年を選択 --</option>
-        <option value="3">3年</option>
-        <option value="4">4年</option>
-        <option value="5">5年</option>
-        <option value="6">6年</option>
-      </select>
-    </div>
-
-    <button id="showKeywords">キーワードを表示</button>
-    <p id="displayStatus" class="status-message"></p>
-    <div id="keywordListContainer" class="keyword-list-container"></div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
