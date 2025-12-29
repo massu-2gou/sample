@@ -2,175 +2,135 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>学習トロッコゲーム</title>
+<title>学習トロッコゲーム（Y字分岐版）</title>
 <style>
 /* === 全体の設定 === */
 body {
-    margin: 0;
-    background: #000;
-    overflow: hidden;
-    height: 100vh;
+    margin: 0; background: #000; overflow: hidden; height: 100vh;
     font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
     touch-action: manipulation;
 }
 
-/* === 3Dシーン（背景） === */
+/* === 3Dシーン === */
 .scene {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    perspective: 300px;
-    overflow: hidden;
-    z-index: 1;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    perspective: 400px; overflow: hidden; z-index: 1;
 }
-
-/* カメラの揺れコンテナ */
 .camera-shake {
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
+    width: 100%; height: 100%; transform-style: preserve-3d;
     animation: shake 0.15s infinite linear;
 }
-
-/* 世界の中心位置 */
+/* 世界の中心。ここを動かして視点移動を表現 */
 .world {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    position: absolute; top: 50%; left: 50%;
     transform-style: preserve-3d;
-    transition: transform 0.3s ease-out;
+    /* カメラワークの滑らかさ */
+    transition: transform 1.2s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
-/* 壁・床の共通設定 */
-.surface {
-    position: absolute;
-    backface-visibility: hidden;
-}
+/* 共通設定 */
+.surface { position: absolute; backface-visibility: hidden; }
 
-/* 床（レール） */
-.floor {
-    width: 600px; height: 4000px;
+/* --- 通常ルートの素材 --- */
+/* 床（メイン） */
+.floor.main {
+    width: 600px; height: 6000px;
     transform: translate(-50%, -50%) rotateX(90deg) translateZ(-150px);
-    background-image: url('rail.png');
-    background-repeat: repeat-y; background-size: 100% auto;
-    animation: moveFloor 0.8s linear infinite;
+    background-image: url('rail.png'); background-repeat: repeat-y; background-size: 100% auto;
+    animation: moveFloor 0.6s linear infinite;
 }
-
-/* 壁（左右） */
-.wall {
-    width: 4000px; height: 600px;
-    top: 50%; left: 50%;
-    background-image: url('wall_post.png');
-    background-repeat: repeat-x; background-size: auto 100%;
+/* 壁（メイン左右） */
+.wall.main {
+    width: 6000px; height: 600px; top: 50%; left: 50%;
+    background-image: url('wall_post.png'); background-repeat: repeat-x; background-size: auto 100%;
 }
-.wall-left {
+.wall.main.left {
     transform: translate(-50%, -50%) rotateY(90deg) translateZ(-300px);
-    animation: moveWallLeft 0.8s linear infinite;
+    animation: moveWallLeft 0.6s linear infinite;
 }
-.wall-right {
+.wall.main.right {
     transform: translate(-50%, -50%) rotateY(-90deg) translateZ(-300px);
-    animation: moveWallRight 0.8s linear infinite;
+    animation: moveWallRight 0.6s linear infinite;
 }
-
-/* 天井 */
-.ceiling {
-    width: 600px; height: 4000px;
+/* 天井（メイン） */
+.ceiling.main {
+    width: 600px; height: 6000px;
     transform: translate(-50%, -50%) rotateX(90deg) translateZ(150px);
     background: #111;
 }
 
-/* 奥のフォグ */
+/* --- ★新規追加：分岐ルートの素材（最初は非表示） --- */
+.branch-path {
+    display: none; /* 通常は隠す */
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+/* 分岐が表示される時の状態 */
+.turning .branch-path {
+    display: block;
+    opacity: 1;
+}
+
+/* 左分岐の床（左斜め奥へ配置） */
+.floor.branch-l {
+    width: 600px; height: 6000px;
+    /* Y軸回転で斜めにする。Z位置を調整して奥に配置 */
+    transform: translate(-50%, -50%) rotateY(25deg) rotateX(90deg) translateZ(-150px) translateY(-2000px);
+    background-image: url('rail.png'); background-repeat: repeat-y; background-size: 100% auto;
+    animation: moveFloor 0.6s linear infinite;
+}
+/* 右分岐の床（右斜め奥へ配置） */
+.floor.branch-r {
+    width: 600px; height: 6000px;
+    transform: translate(-50%, -50%) rotateY(-25deg) rotateX(90deg) translateZ(-150px) translateY(-2000px);
+    background-image: url('rail.png'); background-repeat: repeat-y; background-size: 100% auto;
+    animation: moveFloor 0.6s linear infinite;
+}
+
+/* --- 奥のフォグ --- */
 .fog {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: radial-gradient(circle, transparent 30%, #000 90%);
-    z-index: 10;
-    pointer-events: none;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, transparent 30%, #000 80%);
+    z-index: 10; pointer-events: none;
 }
 
-
-/* === ゲームUIレイヤー（手前） === */
+/* === ゲームUI === */
 #game-ui {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    pointer-events: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
+    display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    padding: 20px; box-sizing: border-box; pointer-events: none; transition: opacity 0.3s;
 }
-
-/* 看板 */
 #question-board {
-    background: rgba(60, 40, 20, 0.9);
-    border: 4px solid #5a3c28;
-    border-radius: 10px;
-    padding: 20px;
-    color: #fff;
-    text-align: center;
-    max-width: 80%;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    background-image: url('board.jpg'); background-size: 100% 100%; background-repeat: no-repeat;
+    background-color: rgba(60, 40, 20, 0.9); padding: 30px 40px; color: #3e2723;
+    text-align: center; max-width: 80%; font-weight: bold; border-radius: 10px;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.6);
     pointer-events: auto;
 }
-#question-text { font-size: 1.5em; margin-bottom: 10px; font-weight: bold; }
-#question-image { max-width: 100%; max-height: 150px; display: none; margin: 0 auto 10px; border-radius: 5px; }
-
-/* 選択肢エリア */
-#choices-container {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    margin-bottom: 40px;
-    pointer-events: auto;
-}
-
-/* ボタン */
+#question-text { font-size: 1.5em; margin-bottom: 10px; }
+#question-image { max-width: 100%; max-height: 150px; display: none; margin: 0 auto 10px; }
+#choices-container { display: flex; justify-content: space-around; width: 100%; margin-bottom: 40px; pointer-events: auto; }
 .choice-btn {
-    background: linear-gradient(to bottom, #ffcc00, #ff9900);
-    border: 3px solid #fff;
-    border-radius: 15px;
-    padding: 15px 30px;
-    color: #330;
-    font-size: 1.2em;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    width: 40%;
-    box-shadow: 0 6px 0 #cc6600, 0 8px 10px rgba(0,0,0,0.3);
-    transition: all 0.1s;
+    background: linear-gradient(to bottom, #ffcc00, #ff9900); border: 3px solid #fff; border-radius: 15px;
+    padding: 15px 30px; width: 40%; color: #330; font-size: 1.2em; font-weight: bold; cursor: pointer;
+    text-align: center; box-shadow: 0 6px 0 #cc6600, 0 8px 10px rgba(0,0,0,0.3); transition: transform 0.1s;
 }
-.choice-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 #cc6600, 0 4px 6px rgba(0,0,0,0.3);
-}
+.choice-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #cc6600; }
 .choice-image { max-width: 80px; max-height: 80px; display: block; margin: 0 auto 5px; }
 
-/* === フィードバック === */
+/* === フィードバック＆ゲームオーバー === */
 .overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-    z-index: 200;
-    pointer-events: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex;
+    justify-content: center; align-items: center; z-index: 200; pointer-events: none;
     opacity: 0; transition: opacity 0.3s;
 }
 #feedback-mark { font-size: 20em; font-weight: bold; }
 .correct-mark { color: #00ff00; text-shadow: 0 0 20px #00ff00; }
 .incorrect-mark { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
-
 #gameover-overlay {
-    background: rgba(0,0,0,0.85);
-    flex-direction: column;
-    color: #fff;
-    pointer-events: auto;
-    cursor: pointer;
+    background: rgba(0,0,0,0.85); flex-direction: column; color: #fff; pointer-events: auto; cursor: pointer;
 }
 #gameover-overlay h1 { font-size: 4em; color: #ff3333; margin: 0; }
-#gameover-overlay p { font-size: 1.5em; }
 
 /* === アニメーション === */
 @keyframes moveFloor { from { background-position: 0 0; } to { background-position: 0 1000px; } }
@@ -183,11 +143,13 @@ body {
     75% { transform: translate(-2px,2px) rotate(0.2deg); }
 }
 
-/* === 状態変化 === */
-.branch-left .world { transform: translate(50%, 50%) rotateY(20deg) translateZ(-100px); }
-.branch-right .world { transform: translate(-50%, 50%) rotateY(-20deg) translateZ(-100px); }
+/* 状態クラス */
 .stopped .surface, .stopped .camera-shake { animation-play-state: paused !important; }
 .falling .scene { transition: transform 1s ease-in; transform: translateY(1000px) rotateX(-30deg); }
+/* 左に曲がる時のカメラワーク（世界を右に回して、斜めのレールを正面に持ってくる） */
+.turning-left .world { transform: translate(-200px, 0) rotateY(25deg); }
+/* 右に曲がる時のカメラワーク */
+.turning-right .world { transform: translate(200px, 0) rotateY(-25deg); }
 
 </style>
 </head>
@@ -196,10 +158,18 @@ body {
 <div class="scene" id="scene">
     <div class="camera-shake" id="camera">
         <div class="world" id="world">
-            <div class="ceiling surface"></div>
-            <div class="floor surface"></div>
-            <div class="wall wall-left surface"></div>
-            <div class="wall wall-right surface"></div>
+            <div class="ceiling main surface"></div>
+            <div class="floor main surface"></div>
+            <div class="wall main left surface"></div>
+            <div class="wall main right surface"></div>
+
+            <div class="floor branch-path branch-l surface"></div>
+            <div class="wall branch-path main left surface" style="transform: translate(-50%, -50%) rotateY(115deg) translateZ(-300px) translateX(2000px);"></div>
+            <div class="wall branch-path main right surface" style="transform: translate(-50%, -50%) rotateY(-65deg) translateZ(-300px) translateX(-2000px);"></div>
+
+            <div class="floor branch-path branch-r surface"></div>
+            <div class="wall branch-path main left surface" style="transform: translate(-50%, -50%) rotateY(65deg) translateZ(-300px) translateX(2000px);"></div>
+            <div class="wall branch-path main right surface" style="transform: translate(-50%, -50%) rotateY(-115deg) translateZ(-300px) translateX(-2000px);"></div>
         </div>
     </div>
     <div class="fog"></div>
@@ -210,7 +180,6 @@ body {
         <img id="question-image" src="" alt="問題画像">
         <div id="question-text">データを読み込んでいます...</div>
     </div>
-
     <div id="choices-container">
         <button class="choice-btn" id="btn-left" onclick="answer('left')">
             <img class="choice-image" id="img-left" src="" style="display:none;">
@@ -226,46 +195,29 @@ body {
 <div id="feedback-overlay" class="overlay">
     <div id="feedback-mark"></div>
 </div>
-
 <div id="gameover-overlay" class="overlay" onclick="restartGame()">
-    <h1>GAME OVER</h1>
-    <p>クリックして最初からやりなおす</p>
+    <h1>GAME OVER</h1><p>クリックして最初からやりなおす</p>
 </div>
 
 <audio id="se-correct" src="correct.wav"></audio>
 <audio id="se-fall" src="fall.mp3"></audio>
 
 <script>
-// === 設定 ===
-// 元のスプレッドシートURL
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTV8WBoJ2XjuwHLZeZvQky5nzV4M_Ew1QD8KJ9U4Bk2DzhWp0FVaUr0xrQqj8zprGfgchA2GT4NhXsi/pub?output=csv';
-
-// 【修正】CORS制限を回避するためのプロキシURL経由にする
-const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GOOGLE_SHEET_URL);
-
-let questions = [];
-let currentIndex = 0;
-let isAnswering = false;
+const PROXY_URL_BASE = 'https://api.allorigins.win/raw?url=';
+let questions = [], currentIndex = 0, isAnswering = false;
 
 const uiContainer = document.getElementById('game-ui');
-const qText = document.getElementById('question-text');
-const qImage = document.getElementById('question-image');
-const lText = document.getElementById('text-left');
-const lImage = document.getElementById('img-left');
-const rText = document.getElementById('text-right');
-const rImage = document.getElementById('img-right');
-const scene = document.getElementById('scene');
-const camera = document.getElementById('camera');
-const world = document.getElementById('world');
-const feedbackOverlay = document.getElementById('feedback-overlay');
-const feedbackMark = document.getElementById('feedback-mark');
+const qText = document.getElementById('question-text'), qImage = document.getElementById('question-image');
+const lText = document.getElementById('text-left'), lImage = document.getElementById('img-left');
+const rText = document.getElementById('text-right'), rImage = document.getElementById('img-right');
+const scene = document.getElementById('scene'), camera = document.getElementById('camera'), world = document.getElementById('world');
+const feedbackOverlay = document.getElementById('feedback-overlay'), feedbackMark = document.getElementById('feedback-mark');
 const gameoverOverlay = document.getElementById('gameover-overlay');
-const seCorrect = document.getElementById('se-correct');
-const seFall = document.getElementById('se-fall');
+const seCorrect = document.getElementById('se-correct'), seFall = document.getElementById('se-fall');
 
 window.onload = function() {
     loadCSV();
-    // 音声の事前ロード（ダミー再生）
     document.body.addEventListener('click', function() {
         seCorrect.play().catch(()=>{}); seCorrect.pause();
         seFall.play().catch(()=>{}); seFall.pause();
@@ -273,125 +225,88 @@ window.onload = function() {
 };
 
 function loadCSV() {
-    // 修正：プロキシURLを使って取得
-    fetch(PROXY_URL)
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.text();
-        })
+    const timestamp = new Date().getTime();
+    const finalUrl = PROXY_URL_BASE + encodeURIComponent(GOOGLE_SHEET_URL + '&t=' + timestamp);
+    fetch(finalUrl).then(r => r.ok ? r.text() : Promise.reject(r.status))
         .then(text => {
             questions = parseCSV(text);
-            if (questions.length > 0) {
-                startGame();
-            } else {
-                qText.textContent = "問題データがありません。";
-            }
+            questions.length > 0 ? startGame() : qText.textContent = "データなし";
         })
-        .catch(error => {
-            console.error('Error loading CSV:', error);
-            // エラー時のメッセージを少し分かりやすく
-            qText.innerHTML = "データの読み込みに失敗しました。<br>インターネット接続を確認してください。";
-        });
+        .catch(e => qText.innerHTML = "読み込みエラー");
 }
 
 function parseCSV(text) {
-    const lines = text.trim().split('\n');
-    const data = [];
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (line === "") continue;
+    const lines = text.trim().split(/\r\n|\n|\r/);
+    return lines.slice(1).map(line => {
         const cols = line.split(',');
-        data.push({
-            qText: cols[0] || "",
-            qImg: cols[1] || "",
-            lText: cols[2] || "ひだり",
-            lImg: cols[3] || "",
-            rText: cols[4] || "みぎ",
-            rImg: cols[5] || "",
-            answer: (cols[6] || "").trim().toLowerCase()
-        });
-    }
-    return data;
+        return {
+            qText: cols[0]||"", qImg: cols[1]||"", lText: cols[2]||"ひだり", lImg: cols[3]||"", rText: cols[4]||"みぎ", rImg: cols[5]||"", answer: (cols[6]||"").trim().toLowerCase()
+        };
+    }).filter(q => q.qText);
 }
 
 function startGame() {
-    currentIndex = 0;
-    resetSceneState();
-    showQuestion();
+    currentIndex = 0; resetSceneState(); showQuestion();
 }
 
 function resetSceneState() {
-    camera.classList.remove('stopped');
-    scene.classList.remove('falling');
-    world.classList.remove('branch-left', 'branch-right');
-    gameoverOverlay.style.opacity = 0;
-    gameoverOverlay.style.pointerEvents = "none";
+    camera.classList.remove('stopped'); scene.classList.remove('falling');
+    world.classList.remove('turning-left', 'turning-right');
+    // ★分岐用の要素を隠す
+    document.querySelectorAll('.branch-path').forEach(el => el.classList.remove('turning'));
+    world.style.transform = "";
+    gameoverOverlay.style.opacity = 0; gameoverOverlay.style.pointerEvents = "none";
     uiContainer.style.opacity = 1;
 }
 
 function showQuestion() {
-    if (currentIndex >= questions.length) {
-        currentIndex = 0; // ループ
-    }
+    if (currentIndex >= questions.length) currentIndex = 0;
     const q = questions[currentIndex];
-    qText.textContent = q.qText;
-    setupImage(qImage, q.qImg);
-    lText.textContent = q.lText;
-    setupImage(lImage, q.lImg);
-    rText.textContent = q.rText;
-    setupImage(rImage, q.rImg);
-    isAnswering = true;
+    qText.textContent = q.qText; setupImage(qImage, q.qImg);
+    lText.textContent = q.lText; setupImage(lImage, q.lImg);
+    rText.textContent = q.rText; setupImage(rImage, q.rImg);
     uiContainer.style.opacity = 1;
+    world.classList.remove('turning-left', 'turning-right');
+    // ★分岐用の要素を隠す
+    document.querySelectorAll('.branch-path').forEach(el => el.classList.remove('turning'));
+    world.style.transform = "";
+    isAnswering = true;
 }
 
-function setupImage(imgElement, src) {
-    if (src) {
-        imgElement.src = src;
-        imgElement.style.display = "block";
-    } else {
-        imgElement.style.display = "none";
-    }
-}
+function setupImage(img, src) { img.src = src || ""; img.style.display = src ? "block" : "none"; }
 
 function answer(direction) {
     if (!isAnswering) return;
     isAnswering = false;
     uiContainer.style.opacity = 0;
+
+    // ★分岐アクション：該当する方向の分岐レールを表示し、カメラをそちらに向ける
     if (direction === 'left') {
-        world.classList.add('branch-left');
+        world.classList.add('turning-left');
+        // 左分岐用の要素だけを表示
+        document.querySelectorAll('.branch-l, .wall.branch-path').forEach(el => el.classList.add('turning'));
     } else {
-        world.classList.add('branch-right');
+        world.classList.add('turning-right');
+        // 右分岐用の要素だけを表示
+        document.querySelectorAll('.branch-r, .wall.branch-path').forEach(el => el.classList.add('turning'));
     }
-    setTimeout(() => {
-        checkAnswer(direction);
-    }, 600);
+
+    setTimeout(() => { checkAnswer(direction); }, 1200);
 }
 
 function checkAnswer(selectedDir) {
-    const correctDir = questions[currentIndex].answer;
-    
-    if (selectedDir === correctDir) {
-        seCorrect.currentTime = 0;
-        seCorrect.play().catch(e => console.log("音声再生エラー:", e));
+    if (selectedDir === questions[currentIndex].answer) {
+        seCorrect.currentTime = 0; seCorrect.play().catch(()=>{});
         showFeedback(true);
-        setTimeout(() => {
-            world.classList.remove('branch-left', 'branch-right');
-        }, 500);
-        setTimeout(() => {
-            currentIndex++;
-            showQuestion();
-        }, 2000);
+        setTimeout(() => { currentIndex++; showQuestion(); }, 1500);
     } else {
-        seFall.currentTime = 0;
-        seFall.play().catch(e => console.log("音声再生エラー:", e));
+        seFall.currentTime = 0; seFall.play().catch(()=>{});
         showFeedback(false);
         setTimeout(() => {
-            camera.classList.add('stopped');
-            scene.classList.add('falling');
+            camera.classList.add('stopped'); scene.classList.add('falling');
         }, 500);
         setTimeout(() => {
-            gameoverOverlay.style.opacity = 1;
-            gameoverOverlay.style.pointerEvents = "auto";
+            gameoverOverlay.style.opacity = 1; gameoverOverlay.style.pointerEvents = "auto";
         }, 2500);
     }
 }
@@ -400,14 +315,10 @@ function showFeedback(isCorrect) {
     feedbackMark.textContent = isCorrect ? '〇' : '×';
     feedbackMark.className = isCorrect ? 'correct-mark' : 'incorrect-mark';
     feedbackOverlay.style.opacity = 1;
-    setTimeout(() => {
-        feedbackOverlay.style.opacity = 0;
-    }, 1500);
+    setTimeout(() => { feedbackOverlay.style.opacity = 0; }, 1000);
 }
 
-function restartGame() {
-    startGame();
-}
+function restartGame() { startGame(); }
 </script>
 </body>
 </html>
